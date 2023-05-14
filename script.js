@@ -12,8 +12,20 @@ function GameBoard() {
   }
 
   const getBoard = () => board;
+
+  return { getBoard };
 }
 
 // Cell factory-function, serve as an object creator for game cells, where user will click
 // to play a move
-function Cell() {}
+function Cell() {
+  let move = "";
+
+  const playMove = (player) => {
+    move = player;
+  };
+
+  const getMove = () => move;
+
+  return { getMove, playMove };
+}
