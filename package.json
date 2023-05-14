@@ -4,6 +4,7 @@
   "description": "A web-based, two-player Tic-tac-toe game. With an option for one-player mode.",
   "main": "index.js",
   "scripts": {
+    "start": "browser-sync start -sw --browser 'chrome.exe' --files",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
