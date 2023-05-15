@@ -5,12 +5,12 @@ const Player = () => {};
 const Cell = () => {
   let markedValue = "";
   let isChecked = false; // the current status of cell
-  const addMark = (player) => {
+  const checkMark = (player) => {
     markedValue = player;
     isChecked = true;
   };
   const getMarkedValue = () => markedValue;
-  return { getMarkedValue, addMark };
+  return { getMarkedValue, checkMark };
 };
 
 // GameBoard: the board display of the tic-tac-toe game -> We will only need ONE board, hence we use Module as an IIFE
