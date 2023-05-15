@@ -33,5 +33,25 @@ const Gameboard = (() => {
 // hence the module pattern
 const GameController = (() => {})();
 
-// DisplayController: closely related to the web. This module will take care of DOM manipulation and interaction.
-const DisplayController = (() => {})();
+// DisplayController: closely related to the web. This module will take care of DOM manipulation and interaction. This will initially render the game state.
+const DisplayController = (() => {
+  const board = Gameboard.getBoard(); // board in the console
+  const boardDiv = document.querySelector(".board"); // board div in HTML
+
+  const displayBoard = () => {
+    // for (let row = 0; row < board.length; row++) {
+    //   for (let col = 0; col < board[row].length; col++) {
+    //     const cell = document.createElement("button");
+    //     cell.classList.add("cell");
+    //     cell.dataset.row = row;
+    //     cell.dataset.column = col;
+    //     boardDiv.appendChild(cell);
+    //   }
+    // }
+    console.log("hello");
+  };
+  return { displayBoard };
+})();
+
+// Here we will call the initial render of the whole web
+DisplayController.displayBoard();
