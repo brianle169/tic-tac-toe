@@ -1,6 +1,3 @@
-// Player: each player is also an object
-const Player = () => {};
-
 // Cell: each Cell is an object, we will need multiple cells -> We apply FactoryFunction
 const Cell = () => {
   let markedValue = "";
