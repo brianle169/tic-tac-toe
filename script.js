@@ -3,9 +3,14 @@ const Player = () => {};
 
 // Cell: each Cell is an object, we will need multiple cells -> We apply FactoryFunction
 const Cell = () => {
-  const markedValue = "";
+  let markedValue = "";
+  let isChecked = false; // the current status of cell
+  const addMark = (player) => {
+    markedValue = player;
+    isChecked = true;
+  };
   const getMarkedValue = () => markedValue;
-  return { getMarkedValue };
+  return { getMarkedValue, addMark };
 };
 
 // GameBoard: the board display of the tic-tac-toe game -> We will only need ONE board, hence we use Module as an IIFE
