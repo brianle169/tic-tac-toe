@@ -58,10 +58,16 @@ const GameController = (() => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
   };
 
+  const validMove = (row, col) => {
+    const board = GameBoard.getBoard();
+    return !board[row][col].getCheckStatus();
+  };
+
   const playRound = (row, col, mark) => {
-    // if game is not end, and move is valid
-    // update the board
-    GameBoard.addPlayerMove(row, col, mark);
+    if (validMove(row, col)) {
+      GameBoard.addPlayerMove(row, col, mark);
+      switchTurn();
+    }
   };
 
   return {
@@ -79,12 +85,10 @@ const DisplayController = (() => {
 
   // clickHandler() callback: event handler for each cell click.
   const clickHandler = (event) => {
-    // get the clicked cell's attributes
-    const thisCellRow = event.target.dataset.row; // row index
-    const thisCellCol = event.target.dataset.column; // column index
-    const thisCellMark = GameController.getCurrentPlayer().mark; // which player moved
+    const thisCellRow = event.target.dataset.row;
+    const thisCellCol = event.target.dataset.column;
+    const thisCellMark = GameController.getCurrentPlayer().mark;
     GameController.playRound(thisCellRow, thisCellCol, thisCellMark);
-    GameController.switchTurn(); // switch player's turn
     paintBoard();
   };
 
@@ -93,12 +97,13 @@ const DisplayController = (() => {
     const board = GameBoard.getBoard(); // board in the console
     messageSpan.textContent = `${
       GameController.getCurrentPlayer().name
-    }'s turn...`; // Print turn message
+    }'s turn...`;
     boardDiv.innerHTML = ""; // clear board
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
         const cell = document.createElement("button");
         cell.textContent = board[row][col].getMarkedValue();
+        cell.style.color = cell.textContent === "☠" ? "red" : "green";
         cell.classList.add("cell");
         cell.dataset.row = row;
         cell.dataset.column = col;
