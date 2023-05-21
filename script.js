@@ -42,6 +42,10 @@ const DisplayController = (() => {
   const XMark = "☠";
   const OMark = "☻";
 
+  const playRound = () => {
+    console.log("Cell clicked");
+  };
+
   const displayBoard = () => {
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
@@ -51,13 +55,12 @@ const DisplayController = (() => {
         cell.dataset.row = row;
         cell.dataset.column = col;
         boardDiv.appendChild(cell);
-        cell.addEventListener("click", () => {
-          console.log("Clicked"); // Test function
-        });
+        cell.addEventListener("click", playRound);
       }
     }
     console.log("hello");
   };
+
   return { displayBoard };
 })();
 
