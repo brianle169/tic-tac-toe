@@ -31,18 +31,8 @@ const GameBoard = (() => {
 
   const getBoard = () => board;
 
-  const logBoard = () => {
-    for (let i = 0; i < board.length; i++) {
-      for (let j = 0; j < board[i].length; j++) {
-        console.log(board[i][j].getMarkedValue());
-        console.log(board[i][j].getCheckStatus());
-      }
-    }
-  };
-
   const addPlayerMove = (row, col, mark) => {
     board[row][col].checkMark(mark);
-    // logBoard();
   };
 
   return { getBoard, addPlayerMove };
@@ -52,11 +42,11 @@ const GameBoard = (() => {
 // GameController: used to control game logic (winning condition, check invalid input, etc.)
 const GameController = (() => {
   const playerOne = {
-    name: "Player 1",
+    name: "Death",
     mark: "☠",
   };
   const playerTwo = {
-    name: "Player 2",
+    name: "Life",
     mark: "☻",
   };
 
@@ -85,6 +75,7 @@ const GameController = (() => {
 // DisplayController: closely related to the web. This module will take care of DOM manipulation and interaction. This will initially render the game state.
 const DisplayController = (() => {
   const boardDiv = document.querySelector(".board"); // board div in HTML
+  const messageSpan = document.querySelector(".message");
 
   // clickHandler() callback: event handler for each cell click.
   const clickHandler = (event) => {
@@ -92,17 +83,17 @@ const DisplayController = (() => {
     const thisCellRow = event.target.dataset.row; // row index
     const thisCellCol = event.target.dataset.column; // column index
     const thisCellMark = GameController.getCurrentPlayer().mark; // which player moved
-    console.log(
-      `Row: ${thisCellRow} - Column: ${thisCellCol} - Mark: ${thisCellMark}`
-    );
     GameController.playRound(thisCellRow, thisCellCol, thisCellMark);
-    paintBoard();
     GameController.switchTurn(); // switch player's turn
+    paintBoard();
   };
 
   // drawInitialBoard: render the initial game board, and add event handler to each cell.
   const paintBoard = () => {
     const board = GameBoard.getBoard(); // board in the console
+    messageSpan.textContent = `${
+      GameController.getCurrentPlayer().name
+    }'s turn...`; // Print turn message
     boardDiv.innerHTML = ""; // clear board
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
@@ -116,9 +107,5 @@ const DisplayController = (() => {
       }
     }
   };
-
-  return { paintBoard };
+  paintBoard(); // Render an initial game board.
 })();
-
-// Here we will call the initial render of the whole web
-DisplayController.paintBoard();
