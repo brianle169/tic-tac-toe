@@ -1,4 +1,5 @@
-// Cell: each Cell is an object, we will need multiple cells -> We apply FactoryFunction
+// Cell Factory.
+// Cell(): Used to initiate Cell objects, where each player's mark will be displayed.
 const Cell = () => {
   let markedValue = "";
   let isChecked = false; // the current status of cell
@@ -10,7 +11,8 @@ const Cell = () => {
   return { getMarkedValue, checkMark };
 };
 
-// GameBoard: the board display of the tic-tac-toe game -> We will only need ONE board, hence we use Module as an IIFE
+// GameBoard Module.
+// GameBoard(): the board display of the tic-tac-toe game -> We will only need ONE board, hence we use Module as an IIFE
 const Gameboard = (() => {
   const rows = 3;
   const cols = 3;
@@ -31,10 +33,11 @@ const Gameboard = (() => {
   return { getBoard };
 })();
 
-// GameController: used to control game logic (winning condition, check invalid input, etc.) -> We will only need ONE of this,
-// hence the module pattern
+// GameController Module.
+// GameController: used to control game logic (winning condition, check invalid input, etc.)
 const GameController = (() => {})();
 
+// DisplayController Module.
 // DisplayController: closely related to the web. This module will take care of DOM manipulation and interaction. This will initially render the game state.
 const DisplayController = (() => {
   const board = Gameboard.getBoard(); // board in the console
@@ -43,14 +46,14 @@ const DisplayController = (() => {
   const OMark = "☻";
 
   const playRound = () => {
-    console.log("Cell clicked");
+    console.log("Cell clicked"); // Testing
   };
 
   const displayBoard = () => {
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
         const cell = document.createElement("button");
-        cell.textContent = Math.random() < 0.5 ? XMark : OMark;
+        cell.textContent = Math.random() < 0.5 ? XMark : OMark; // Testing
         cell.classList.add("cell");
         cell.dataset.row = row;
         cell.dataset.column = col;
