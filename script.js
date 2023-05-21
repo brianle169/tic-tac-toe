@@ -39,14 +39,14 @@ const GameController = (() => {})();
 const DisplayController = (() => {
   const board = Gameboard.getBoard(); // board in the console
   const boardDiv = document.querySelector(".board"); // board div in HTML
-  const X = "☠";
-  const O = "☻";
+  const XMark = "☠";
+  const OMark = "☻";
 
   const displayBoard = () => {
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
         const cell = document.createElement("button");
-        cell.textContent = Math.random() < 0.5 ? X : O;
+        cell.textContent = Math.random() < 0.5 ? XMark : OMark;
         cell.classList.add("cell");
         cell.dataset.row = row;
         cell.dataset.column = col;
