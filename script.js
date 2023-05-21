@@ -31,11 +31,21 @@ const GameBoard = (() => {
 
   const getBoard = () => board;
 
-  const addMark = (row, col, mark) => {
-    board[row][col].checkMark(mark);
+  const logBoard = () => {
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[i].length; j++) {
+        console.log(board[i][j].getMarkedValue());
+        console.log(board[i][j].getCheckStatus());
+      }
+    }
   };
 
-  return { getBoard };
+  const addPlayerMove = (row, col, mark) => {
+    board[row][col].checkMark(mark);
+    // logBoard();
+  };
+
+  return { getBoard, addPlayerMove };
 })();
 
 // GameController Module.
@@ -58,55 +68,57 @@ const GameController = (() => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
   };
 
-  const validMove = () => {};
+  const playRound = (row, col, mark) => {
+    // if game is not end, and move is valid
+    // update the board
+    GameBoard.addPlayerMove(row, col, mark);
+  };
 
   return {
     getCurrentPlayer,
     switchTurn,
+    playRound,
   };
 })();
 
 // DisplayController Module.
 // DisplayController: closely related to the web. This module will take care of DOM manipulation and interaction. This will initially render the game state.
 const DisplayController = (() => {
-  const board = GameBoard.getBoard(); // board in the console
   const boardDiv = document.querySelector(".board"); // board div in HTML
-  const XMark = "☠";
-  const OMark = "☻";
 
-  // playRound() callback: event handler for each cell click.
-  const playRound = (event) => {
-    const thisCellRow = event.target.dataset.row;
-    const thisCellCol = event.target.dataset.column;
-    const thisCellMark = event.target.textContent;
-    // const thisCellMark = GameController.getCurrentPlayer().mark;
+  // clickHandler() callback: event handler for each cell click.
+  const clickHandler = (event) => {
+    // get the clicked cell's attributes
+    const thisCellRow = event.target.dataset.row; // row index
+    const thisCellCol = event.target.dataset.column; // column index
+    const thisCellMark = GameController.getCurrentPlayer().mark; // which player moved
     console.log(
       `Row: ${thisCellRow} - Column: ${thisCellCol} - Mark: ${thisCellMark}`
     );
-    // GameBoard.addMark(
-    //   thisCellRow,
-    //   thisCellCol,
-    //   GameController.getCurrentPlayer().mark
-    // );
+    GameController.playRound(thisCellRow, thisCellCol, thisCellMark);
+    paintBoard();
+    GameController.switchTurn(); // switch player's turn
   };
 
-  // displayBoard(): append cells to game board. Update board after each round.
-  const displayBoard = () => {
+  // drawInitialBoard: render the initial game board, and add event handler to each cell.
+  const paintBoard = () => {
+    const board = GameBoard.getBoard(); // board in the console
+    boardDiv.innerHTML = ""; // clear board
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
         const cell = document.createElement("button");
-        cell.textContent = Math.random() < 0.5 ? XMark : OMark; // Testing
+        cell.textContent = board[row][col].getMarkedValue();
         cell.classList.add("cell");
         cell.dataset.row = row;
         cell.dataset.column = col;
         boardDiv.appendChild(cell);
-        cell.addEventListener("click", playRound);
+        cell.addEventListener("click", clickHandler);
       }
     }
   };
 
-  return { displayBoard };
+  return { paintBoard };
 })();
 
 // Here we will call the initial render of the whole web
-DisplayController.displayBoard();
+DisplayController.paintBoard();
