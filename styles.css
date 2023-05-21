@@ -1,0 +1,15 @@
+* {
+  padding: 0;
+  margin: 0;
+  border: 1px solid red;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px;
+}
