@@ -11,11 +11,16 @@
 
 <body>
   <div class="container">
-    <h1 class="header">Tic-Tac-Toe but it's dead (☠) or alive (☻)</h1>
+    <h1 class="header">
+      Tic-tac-toe but it's either
+      <p style="display: inline-block; color: red">Dead ☠</p>
+      or
+      <p style="display: inline-block; color: green">Alive ☻</p>
+    </h1>
 
     <div class="game-area">
       <span class="message">Player One's turn to move...</span>
-      <div class="board">Every cell goes in here with DOM manipulation</div>
+      <div class="board"></div>
       <span class="result-message">Announce Winner here</span>
     </div>
 

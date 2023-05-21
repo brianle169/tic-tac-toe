@@ -1,8 +1,11 @@
 * {
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
   border: 1px solid red;
   font-family: "Courier New", Courier, monospace;
+  --color-dead: red;
+  --color-alive: green;
 }
 
 .container {
@@ -11,5 +14,27 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  margin: 30px;
+  padding: 30px;
+}
+
+.game-area {
+  /* Game Area will have fixed dimension */
+  height: 550px;
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.board {
+  height: 450px;
+  width: 450px;
+  display: grid;
+  grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+}
+
+.cell {
+  font-size: 6rem;
+  background-color: white;
 }
