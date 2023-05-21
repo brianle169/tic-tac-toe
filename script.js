@@ -8,12 +8,13 @@ const Cell = () => {
     isChecked = true;
   };
   const getMarkedValue = () => markedValue;
-  return { getMarkedValue, checkMark };
+  const getCheckStatus = () => isChecked;
+  return { getMarkedValue, checkMark, getCheckStatus };
 };
 
 // GameBoard Module.
 // GameBoard(): the board display of the tic-tac-toe game -> We will only need ONE board, hence we use Module as an IIFE
-const Gameboard = (() => {
+const GameBoard = (() => {
   const rows = 3;
   const cols = 3;
   const board = [];
@@ -30,25 +31,66 @@ const Gameboard = (() => {
 
   const getBoard = () => board;
 
+  const addMark = (row, col, mark) => {
+    board[row][col].checkMark(mark);
+  };
+
   return { getBoard };
 })();
 
 // GameController Module.
 // GameController: used to control game logic (winning condition, check invalid input, etc.)
-const GameController = (() => {})();
+const GameController = (() => {
+  const playerOne = {
+    name: "Player 1",
+    mark: "☠",
+  };
+  const playerTwo = {
+    name: "Player 2",
+    mark: "☻",
+  };
+
+  let currentPlayer = playerOne; // playerOne will always go first.
+
+  const getCurrentPlayer = () => currentPlayer;
+
+  const switchTurn = () => {
+    currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
+  };
+
+  const validMove = () => {};
+
+  return {
+    getCurrentPlayer,
+    switchTurn,
+  };
+})();
 
 // DisplayController Module.
 // DisplayController: closely related to the web. This module will take care of DOM manipulation and interaction. This will initially render the game state.
 const DisplayController = (() => {
-  const board = Gameboard.getBoard(); // board in the console
+  const board = GameBoard.getBoard(); // board in the console
   const boardDiv = document.querySelector(".board"); // board div in HTML
   const XMark = "☠";
   const OMark = "☻";
 
-  const playRound = () => {
-    console.log("Cell clicked"); // Testing
+  // playRound() callback: event handler for each cell click.
+  const playRound = (event) => {
+    const thisCellRow = event.target.dataset.row;
+    const thisCellCol = event.target.dataset.column;
+    const thisCellMark = event.target.textContent;
+    // const thisCellMark = GameController.getCurrentPlayer().mark;
+    console.log(
+      `Row: ${thisCellRow} - Column: ${thisCellCol} - Mark: ${thisCellMark}`
+    );
+    // GameBoard.addMark(
+    //   thisCellRow,
+    //   thisCellCol,
+    //   GameController.getCurrentPlayer().mark
+    // );
   };
 
+  // displayBoard(): append cells to game board. Update board after each round.
   const displayBoard = () => {
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
@@ -61,7 +103,6 @@ const DisplayController = (() => {
         cell.addEventListener("click", playRound);
       }
     }
-    console.log("hello");
   };
 
   return { displayBoard };
