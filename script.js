@@ -57,17 +57,11 @@ const GameController = (() => {
   };
 
   let currentPlayer = playerOne; // playerOne will always go first.
-
   let currentTurn = `${currentPlayer.name}'s turn to move!`;
-
   let resultMessage = `What an intense game!`;
-
   const getCurrentPlayer = () => currentPlayer;
-
   const getCurrentTurnMessage = () => currentTurn;
-
   const getResultMessage = () => resultMessage;
-
   const switchTurn = () => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
     currentTurn = `${currentPlayer.name}'s turn to move!`;
@@ -84,13 +78,20 @@ const GameController = (() => {
   const gameTie = () => GameBoard.boardIsFilled() && !gameWon();
 
   const playRound = (row, col, mark) => {
+    // If the move is valid (no overlap) then we add move to cell.
     if (validMove(row, col)) {
       GameBoard.addPlayerMove(row, col, mark);
     }
+    // Then check winning condition. This will allow the game to stop right after the last input
+    // If the game is not ended yet, we switch player's turn
     if (!gameTie() && !gameWon()) {
       switchTurn();
-    } else if (gameTie()) {
+    }
+
+    // If it ended in a TIE. We re-assign the messages.
+    else if (gameTie()) {
       resultMessage = `It's a TIE!`;
+      currentTurn = `Game ended!`;
     }
   };
 
