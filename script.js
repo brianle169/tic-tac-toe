@@ -61,7 +61,6 @@ const GameBoard = (() => {
   const rowCheck = () => board.some(rowIsIdentical);
 
   const colCheck = () => {
-    const colResult = [];
     for (let col = 0; col < cols; col++) {
       const target = board[0][col];
       const colItems = [target.getMarkedValue()];
@@ -72,11 +71,10 @@ const GameBoard = (() => {
         }
       }
       if (colItems.length === cols) {
-        colResult[col] = true;
-        break;
+        return true;
       }
     }
-    return colResult.some((item) => item === true);
+    return false;
   };
 
   const addPlayerMove = (row, col, player) => {
