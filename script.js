@@ -77,6 +77,8 @@ const GameBoard = (() => {
     return false;
   };
 
+  const diagCheck = () => {};
+
   const addPlayerMove = (row, col, player) => {
     board[row][col].checkMark(player);
   };
@@ -175,6 +177,12 @@ const DisplayController = (() => {
     if (GameController.getGameEndStatus()) {
       disableBoard();
     }
+    boardDiv.style.backgroundColor =
+      GameController.getWinner() === "Death"
+        ? "red"
+        : GameController.getWinner() === "Life"
+        ? "green"
+        : "black";
   };
 
   // paintBoard: render the initial game board, and add event handler to each cell.
