@@ -31,11 +31,17 @@ const GameBoard = (() => {
 
   const getBoard = () => board;
 
+  const cellIsFilled = (cell) => cell.getCheckStatus();
+
+  const rowIsFilled = (row) => row.every(cellIsFilled);
+
+  const boardIsFilled = () => board.every(rowIsFilled);
+
   const addPlayerMove = (row, col, mark) => {
     board[row][col].checkMark(mark);
   };
 
-  return { getBoard, addPlayerMove };
+  return { getBoard, addPlayerMove, boardIsFilled };
 })();
 
 // GameController Module.
@@ -56,6 +62,10 @@ const GameController = (() => {
 
   const switchTurn = () => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
+  };
+
+  const gameEnd = () => {
+    const board = GameBoard.getBoard();
   };
 
   const validMove = (row, col) => {
@@ -89,10 +99,11 @@ const DisplayController = (() => {
     const thisCellCol = event.target.dataset.column;
     const thisCellMark = GameController.getCurrentPlayer().mark;
     GameController.playRound(thisCellRow, thisCellCol, thisCellMark);
+    console.log(GameBoard.boardIsFilled());
     paintBoard();
   };
 
-  // drawInitialBoard: render the initial game board, and add event handler to each cell.
+  // paintBoard: render the initial game board, and add event handler to each cell.
   const paintBoard = () => {
     const board = GameBoard.getBoard(); // board in the console
     messageSpan.textContent = `${
