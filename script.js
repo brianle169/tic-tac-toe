@@ -60,11 +60,30 @@ const GameBoard = (() => {
 
   const rowCheck = () => board.some(rowIsIdentical);
 
+  const colCheck = () => {
+    const colResult = [];
+    for (let col = 0; col < cols; col++) {
+      const target = board[0][col];
+      const colItems = [target.getMarkedValue()];
+      if (!target.getCheckStatus()) continue;
+      for (let row = 1; row < rows; row++) {
+        if (board[row][col].getMarkedValue() === target.getMarkedValue()) {
+          colItems.push(target.getMarkedValue);
+        }
+      }
+      if (colItems.length === cols) {
+        colResult[col] = true;
+        break;
+      }
+    }
+    return colResult.some((item) => item === true);
+  };
+
   const addPlayerMove = (row, col, player) => {
     board[row][col].checkMark(player);
   };
 
-  return { getBoard, addPlayerMove, boardIsFilled, rowCheck };
+  return { getBoard, addPlayerMove, boardIsFilled, rowCheck, colCheck };
 })();
 
 // GameController Module.
@@ -98,7 +117,7 @@ const GameController = (() => {
     !GameBoard.getBoard()[row][col].getCheckStatus();
 
   // Check whether the game ended with a win.
-  const gameWon = () => GameBoard.rowCheck();
+  const gameWon = () => GameBoard.colCheck() || GameBoard.rowCheck();
 
   // TIE: when the game board is filled but no one wins.
   const gameTie = () => GameBoard.boardIsFilled() && !gameWon();
@@ -108,7 +127,7 @@ const GameController = (() => {
     if (validMove(row, col)) {
       GameBoard.addPlayerMove(row, col, currentPlayer);
       if (gameTie()) {
-        resultMessage = `It's a TIE!`;
+        resultMessage = `You're probably still alive lol!`;
         currentTurn = `Game ended!`;
         gameEnd = true;
         return;
@@ -146,9 +165,6 @@ const DisplayController = (() => {
   const disableBoard = () => {
     Array.from(boardDiv.childNodes).forEach((node) => {
       node.setAttribute("disabled", "");
-      if (GameController.getWinner() === "Death") {
-        node.style.backgroundColor = "black";
-      }
     });
   };
 

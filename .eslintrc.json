@@ -13,6 +13,7 @@
     "prefer-const": "warn",
     "no-unused-vars": "off",
     "no-plusplus": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "no-continue": "off"
   }
 }
