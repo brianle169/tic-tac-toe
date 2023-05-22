@@ -140,9 +140,10 @@ const GameController = (() => {
   };
   let gameEnd = false;
   let winner = "";
+  let turn = 0;
   let currentPlayer = playerOne; // playerOne will always go first.
   let currentTurn = `${currentPlayer.name}'s turn to move!`;
-  let resultMessage = `What an intense game!`;
+  let resultMessage = `Welcome players!`;
   const getCurrentPlayer = () => currentPlayer;
   const getCurrentTurnMessage = () => currentTurn;
   const getResultMessage = () => resultMessage;
@@ -165,6 +166,14 @@ const GameController = (() => {
   const gameTie = () => GameBoard.boardIsFilled() && !gameWon();
 
   const playRound = (row, col) => {
+    turn++;
+    resultMessage =
+      turn >= 1 && turn < 5
+        ? `Try not to die!`
+        : turn >= 5
+        ? `This is getting intense!`
+        : "";
+
     // If the move is valid (no overlap) then we add move to cell.
     if (validMove(row, col)) {
       GameBoard.addPlayerMove(row, col, currentPlayer);
