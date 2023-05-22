@@ -45,9 +45,7 @@ const GameBoard = (() => {
 
   const getBoard = () => board;
 
-  const cellIsFilled = (cell) => cell.getCheckStatus();
-
-  const rowIsFilled = (row) => row.every(cellIsFilled);
+  const rowIsFilled = (row) => row.every((cell) => cell.getCheckStatus());
 
   const boardIsFilled = () => board.every(rowIsFilled);
 
