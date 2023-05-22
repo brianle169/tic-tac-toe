@@ -58,30 +58,46 @@ const GameController = (() => {
 
   let currentPlayer = playerOne; // playerOne will always go first.
 
+  let currentTurn = `${currentPlayer.name}'s turn to move!`;
+
+  let resultMessage = `What an intense game!`;
+
   const getCurrentPlayer = () => currentPlayer;
+
+  const getCurrentTurnMessage = () => currentTurn;
+
+  const getResultMessage = () => resultMessage;
 
   const switchTurn = () => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
+    currentTurn = `${currentPlayer.name}'s turn to move!`;
   };
 
-  const gameEnd = () => {
-    const board = GameBoard.getBoard();
-  };
+  // Check if current player clicked on a filled cell. Returns true if valid false otherwise
+  const validMove = (row, col) =>
+    !GameBoard.getBoard()[row][col].getCheckStatus();
 
-  const validMove = (row, col) => {
-    const board = GameBoard.getBoard();
-    return !board[row][col].getCheckStatus();
-  };
+  // Check whether the game ended with a win.
+  const gameWon = () => false;
+
+  // TIE: when the game board is filled but no one wins.
+  const gameTie = () => GameBoard.boardIsFilled() && !gameWon();
 
   const playRound = (row, col, mark) => {
     if (validMove(row, col)) {
       GameBoard.addPlayerMove(row, col, mark);
+    }
+    if (!gameTie() && !gameWon()) {
       switchTurn();
+    } else if (gameTie()) {
+      resultMessage = `It's a TIE!`;
     }
   };
 
   return {
     getCurrentPlayer,
+    getCurrentTurnMessage,
+    getResultMessage,
     switchTurn,
     playRound,
   };
@@ -92,6 +108,7 @@ const GameController = (() => {
 const DisplayController = (() => {
   const boardDiv = document.querySelector(".board"); // board div in HTML
   const messageSpan = document.querySelector(".message");
+  const resultSpan = document.querySelector(".result-message");
 
   // clickHandler() callback: event handler for each cell click.
   const clickHandler = (event) => {
@@ -99,17 +116,15 @@ const DisplayController = (() => {
     const thisCellCol = event.target.dataset.column;
     const thisCellMark = GameController.getCurrentPlayer().mark;
     GameController.playRound(thisCellRow, thisCellCol, thisCellMark);
-    console.log(GameBoard.boardIsFilled());
     paintBoard();
   };
 
   // paintBoard: render the initial game board, and add event handler to each cell.
   const paintBoard = () => {
     const board = GameBoard.getBoard(); // board in the console
-    messageSpan.textContent = `${
-      GameController.getCurrentPlayer().name
-    }'s turn...`;
     boardDiv.innerHTML = ""; // clear board
+    messageSpan.textContent = GameController.getCurrentTurnMessage();
+    resultSpan.textContent = GameController.getResultMessage();
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
         const cell = document.createElement("button");
