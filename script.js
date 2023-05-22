@@ -77,13 +77,54 @@ const GameBoard = (() => {
     return false;
   };
 
-  const diagCheck = () => {};
+  const diagCheck = () => {
+    let left = 0;
+    let right = cols - 1;
+    const leftDiagItems = [];
+    const rightDiagItems = [];
+
+    for (let row = 0; row < rows; row++) {
+      const leftTarget = board[0][0];
+      const leftTargetValue = leftTarget.getMarkedValue();
+      const rightTarget = board[0][cols - 1];
+      const rightTargetValue = rightTarget.getMarkedValue();
+
+      if (!leftTarget.getCheckStatus() && !rightTarget.getCheckStatus()) {
+        return false;
+      }
+      if (
+        board[row][left].getCheckStatus() &&
+        board[row][left].getMarkedValue() === leftTargetValue
+      ) {
+        leftDiagItems.push(leftTargetValue);
+      }
+      if (
+        board[row][right].getCheckStatus() &&
+        board[row][right].getMarkedValue() === rightTargetValue
+      ) {
+        rightDiagItems.push(rightTargetValue);
+      }
+      left++;
+      right--;
+    }
+    if (leftDiagItems.length === rows || rightDiagItems.length === rows) {
+      return true;
+    }
+    return false;
+  };
 
   const addPlayerMove = (row, col, player) => {
     board[row][col].checkMark(player);
   };
 
-  return { getBoard, addPlayerMove, boardIsFilled, rowCheck, colCheck };
+  return {
+    getBoard,
+    addPlayerMove,
+    boardIsFilled,
+    rowCheck,
+    colCheck,
+    diagCheck,
+  };
 })();
 
 // GameController Module.
@@ -117,7 +158,8 @@ const GameController = (() => {
     !GameBoard.getBoard()[row][col].getCheckStatus();
 
   // Check whether the game ended with a win.
-  const gameWon = () => GameBoard.colCheck() || GameBoard.rowCheck();
+  const gameWon = () =>
+    GameBoard.colCheck() || GameBoard.rowCheck() || GameBoard.diagCheck();
 
   // TIE: when the game board is filled but no one wins.
   const gameTie = () => GameBoard.boardIsFilled() && !gameWon();
