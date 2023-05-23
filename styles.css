@@ -39,7 +39,7 @@
   display: grid;
   grid-template: repeat(3, 1fr) / repeat(3, 1fr);
   grid-gap: 5px;
-  background-color: black;
+  background-color: white;
 }
 
 /* Reset default styling for buttons */

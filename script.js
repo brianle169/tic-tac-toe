@@ -239,6 +239,7 @@ const DisplayController = (() => {
   // paintBoard: render the initial game board, and add event handler to each cell.
   const paintBoard = () => {
     const board = GameBoard.getBoard(); // board in the console
+    boardDiv.style.backgroundColor = "black";
     boardDiv.innerHTML = ""; // clear board
     messageSpan.textContent = GameController.getCurrentTurnMessage();
     resultSpan.textContent = GameController.getResultMessage();
