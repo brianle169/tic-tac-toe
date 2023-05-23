@@ -224,7 +224,7 @@ const DisplayController = (() => {
     const cRow = event.target.dataset.row;
     const cCol = event.target.dataset.column;
     GameController.playRound(cRow, cCol);
-    paintBoard();
+    displayGameBoard();
     if (GameController.getGameEndStatus()) {
       disableBoard();
     }
@@ -237,7 +237,7 @@ const DisplayController = (() => {
   };
 
   // paintBoard: render the initial game board, and add event handler to each cell.
-  const paintBoard = () => {
+  const displayGameBoard = () => {
     const board = GameBoard.getBoard(); // board in the console
     boardDiv.style.backgroundColor = "black";
     boardDiv.innerHTML = ""; // clear board
@@ -256,5 +256,5 @@ const DisplayController = (() => {
       }
     }
   };
-  paintBoard(); // Render an initial game board.
+  displayGameBoard(); // Render an initial game board.
 })();
