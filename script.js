@@ -141,7 +141,7 @@ const GameController = (() => {
   let gameEnd = false;
   let winner = "";
   let turn = 0;
-  let currentPlayer = playerOne; // playerOne will always go first.
+  let currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
   let currentTurn = `${currentPlayer.name}'s turn to move!`;
   let resultMessage = `Welcome players!`;
   const getCurrentPlayer = () => currentPlayer;
