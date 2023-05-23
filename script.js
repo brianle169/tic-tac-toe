@@ -13,6 +13,11 @@ const Cell = (rowIndex, colIndex) => {
     markedValue = player.mark;
     isChecked = true;
   };
+  const clearCellContent = () => {
+    markedValue = "";
+    markedPlayer = "";
+    isChecked = false;
+  };
   const getCoordinate = () => coordinate;
   const getMarkedValue = () => markedValue;
   const getMarkedPlayer = () => markedPlayer;
@@ -23,6 +28,7 @@ const Cell = (rowIndex, colIndex) => {
     getCheckStatus,
     getCoordinate,
     getMarkedPlayer,
+    clearCellContent,
   };
 };
 
@@ -44,6 +50,10 @@ const GameBoard = (() => {
   }
 
   const getBoard = () => board;
+
+  const clearBoard = () => {
+    board.forEach((row) => row.forEach((cell) => cell.clearCellContent()));
+  };
 
   const rowIsFilled = (row) => row.every((cell) => cell.getCheckStatus());
 
@@ -119,6 +129,7 @@ const GameBoard = (() => {
 
   return {
     getBoard,
+    clearBoard,
     addPlayerMove,
     boardIsFilled,
     rowCheck,
@@ -138,12 +149,21 @@ const GameController = (() => {
     name: "Life",
     mark: "☻",
   };
-  let gameEnd = false;
-  let winner = "";
-  let turn = 0;
-  let currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
-  let currentTurn = `${currentPlayer.name}'s turn to move!`;
-  let resultMessage = `Welcome players!`;
+  let gameEnd;
+  let winner;
+  let turn;
+  let currentPlayer;
+  let currentTurn;
+  let resultMessage;
+  const setDefaultGameState = () => {
+    gameEnd = false;
+    winner = "";
+    turn = 0;
+    currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
+    currentTurn = `${currentPlayer.name}'s turn to move!`;
+    resultMessage = "Welcome players!";
+  };
+  setDefaultGameState();
   const getCurrentPlayer = () => currentPlayer;
   const getCurrentTurnMessage = () => currentTurn;
   const getResultMessage = () => resultMessage;
@@ -203,6 +223,7 @@ const GameController = (() => {
     getWinner,
     switchTurn,
     playRound,
+    setDefaultGameState,
   };
 })();
 
@@ -210,13 +231,28 @@ const GameController = (() => {
 // DisplayController: closely related to the web. This module will take care of DOM manipulation and interaction. This will initially render the game state.
 const DisplayController = (() => {
   const boardDiv = document.querySelector(".board"); // board div in HTML
-  const messageSpan = document.querySelector(".message");
-  const resultSpan = document.querySelector(".result-message");
+  const messageDiv = document.querySelector(".message");
+  const resultDiv = document.querySelector(".result-message");
 
   const disableBoard = () => {
     Array.from(boardDiv.childNodes).forEach((node) => {
       node.setAttribute("disabled", "");
     });
+  };
+
+  const restartGame = () => {
+    GameBoard.clearBoard();
+    GameController.setDefaultGameState();
+    displayGameBoard();
+  };
+
+  const displayRestartButton = () => {
+    const restartButton = document.createElement("button");
+    restartButton.classList.add("restart");
+    restartButton.textContent = "Play Again";
+    restartButton.addEventListener("click", restartGame);
+    messageDiv.textContent = "";
+    messageDiv.appendChild(restartButton);
   };
 
   // clickHandler() callback: event handler for each cell click.
@@ -227,6 +263,7 @@ const DisplayController = (() => {
     displayGameBoard();
     if (GameController.getGameEndStatus()) {
       disableBoard();
+      displayRestartButton();
     }
     boardDiv.style.backgroundColor =
       GameController.getWinner() === "Death"
@@ -241,8 +278,8 @@ const DisplayController = (() => {
     const board = GameBoard.getBoard(); // board in the console
     boardDiv.style.backgroundColor = "black";
     boardDiv.innerHTML = ""; // clear board
-    messageSpan.textContent = GameController.getCurrentTurnMessage();
-    resultSpan.textContent = GameController.getResultMessage();
+    messageDiv.textContent = GameController.getCurrentTurnMessage();
+    resultDiv.textContent = GameController.getResultMessage();
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
         const cell = document.createElement("button");

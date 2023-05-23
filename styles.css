@@ -54,17 +54,28 @@ button {
   background-color: white;
 }
 
-/* button[disabled] { */
-/*   background-color: #00000025; */
-/* } */
-
-button:hover {
+.cell:hover,
+.restart:hover {
   cursor: pointer;
 }
 
-button:active {
+.cell:active {
   cursor: pointer;
   background-color: #ffffff95;
+}
+
+.restart {
+  font-size: 1.3rem;
+  font-weight: bold;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 2px 2px 5px 0px #000000;
+}
+
+.restart:active {
+  cursor: pointer;
+  transform: translateX(2px) translateY(2px);
+  box-shadow: none;
 }
 
 .footer {
