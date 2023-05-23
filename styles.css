@@ -69,6 +69,7 @@ button {
   font-weight: bold;
   padding: 10px;
   margin-bottom: 10px;
+  background-color: orange;
   box-shadow: 2px 2px 5px 0px #000000;
 }
 
