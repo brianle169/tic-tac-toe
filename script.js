@@ -138,35 +138,21 @@ const GameBoard = (() => {
   };
 })();
 
-const AI = () => {
-  const info = {
-    name: "AI",
-    team: "Death",
-    mark: "☠",
-  };
-
-  const getInfo = () => info;
-  return { getInfo };
-};
-
+// PLayer factory function: Initiate and set player's attributes
 const Player = (pTeam, pName, pMark) => {
-  let team = pTeam;
+  const team = pTeam;
   let name = pName;
-  let mark = pMark;
+  const mark = pMark;
   const getTeam = () => team;
   const getName = () => name;
   const getMark = () => mark;
-  const setTeam = (newTeam) => {
-    team = newTeam;
-  };
   const setName = (newName) => {
     name = newName;
   };
-  const setMark = (newMark) => {
-    mark = newMark;
-  };
-  return { getTeam, getName, getMark, setTeam, setName, setMark };
+  return { getTeam, getName, getMark, setName };
 };
+
+const AI = () => {};
 
 // GameController Module.
 // GameController: used to control game logic (winning condition, check invalid input, etc.)
