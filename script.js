@@ -9,8 +9,8 @@ const Cell = (rowIndex, colIndex) => {
   let markedPlayer = "";
   let isChecked = false; // the current status of cell
   const checkMark = (player) => {
-    markedPlayer = player.name;
-    markedValue = player.mark;
+    markedPlayer = player.getName();
+    markedValue = player.getMark();
     isChecked = true;
   };
   const clearCellContent = () => {
@@ -138,6 +138,36 @@ const GameBoard = (() => {
   };
 })();
 
+const AI = () => {
+  const info = {
+    name: "AI",
+    team: "Death",
+    mark: "☠",
+  };
+
+  const getInfo = () => info;
+  return { getInfo };
+};
+
+const Player = (pTeam, pName, pMark) => {
+  let team = pTeam;
+  let name = pName;
+  let mark = pMark;
+  const getTeam = () => team;
+  const getName = () => name;
+  const getMark = () => mark;
+  const setTeam = (newTeam) => {
+    team = newTeam;
+  };
+  const setName = (newName) => {
+    name = newName;
+  };
+  const setMark = (newMark) => {
+    mark = newMark;
+  };
+  return { getTeam, getName, getMark, setTeam, setName, setMark };
+};
+
 // GameController Module.
 // GameController: used to control game logic (winning condition, check invalid input, etc.)
 const GameController = (() => {
@@ -149,29 +179,15 @@ const GameController = (() => {
   let resultMessage;
   let aiMode;
 
-  const playerOne = {
-    team: "Death",
-    name: "Death",
-    mark: "☠",
-  };
-  const playerTwo = {
-    team: "Life",
-    name: "Life",
-    mark: "☻",
-  };
-
-  const AI = {
-    name: "AI",
-    team: currentPlayer.team === "Death" ? "Life" : "Death",
-    mark: this.team === "Death" ? "☠" : "☻",
-  };
+  const playerOne = Player("Death", "Death", "☠");
+  const playerTwo = Player("Life", "Life", "☻");
 
   const setDefaultGameState = () => {
     gameEnd = false;
     winner = "";
     turn = 0;
     currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
-    currentTurn = `${currentPlayer.name}'s turn to move!`;
+    currentTurn = `${currentPlayer.getName()}'s turn to move!`;
     resultMessage = "Welcome players!";
   };
   const getCurrentPlayer = () => currentPlayer;
@@ -181,14 +197,14 @@ const GameController = (() => {
   const getWinner = () => winner;
   const setPlayerName = (name1, name2) => {
     if (name1 !== "" && name2 !== "") {
-      playerOne.name = name1;
-      playerTwo.name = name2;
+      playerOne.setName(name1);
+      playerTwo.setName(name2);
     }
     setDefaultGameState();
   };
   const switchTurn = () => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
-    currentTurn = `${currentPlayer.name}'s turn to move!`;
+    currentTurn = `${currentPlayer.getName()}'s turn to move!`;
   };
 
   // Check if current player clicked on a filled cell. Returns true if valid false otherwise
@@ -222,10 +238,10 @@ const GameController = (() => {
       }
       if (gameWon()) {
         resultMessage =
-          currentPlayer.team === "Death"
+          currentPlayer.getTeam() === "Death"
             ? `DEATH prevails!`
             : "Long live humans!";
-        winner = currentPlayer.team;
+        winner = currentPlayer.getTeam();
         currentTurn = "Game ended!";
         gameEnd = true;
         return;
