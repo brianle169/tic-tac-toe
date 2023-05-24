@@ -14,3 +14,7 @@ Game Panel: The main game panel where players will play their moves.
 
 When a player wins, the game panel is displayed something like this:
 ![player-wins](./img/player-wins.png)
+
+To test the project, access via [this link](https://brianle169.github.io/tic-tac-toe/)
+
+To-do: Implement AI opponent using the Minimax Algorithm (suggested by The Odin Project) that is impossible to win against.
