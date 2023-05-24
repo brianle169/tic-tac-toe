@@ -62,7 +62,8 @@ button {
 .cell:hover,
 .start:hover,
 .resetGame:hover,
-.restart:hover {
+.restart:hover,
+.toggle-ai-mode:hover {
   cursor: pointer;
 }
 
@@ -73,7 +74,8 @@ button {
 
 .restart,
 .resetGame,
-.start {
+.start,
+.toggle-ai-mode {
   font-size: 1.3rem;
   font-weight: bold;
   padding: 10px;
@@ -85,7 +87,8 @@ button {
 
 .restart:active,
 .resetGame:active,
-.start:active {
+.start:active,
+.toggle-ai-mode:active {
   cursor: pointer;
   transform: translateX(2px) translateY(2px);
   box-shadow: none;
@@ -107,6 +110,9 @@ button {
 .start-game h1 {
   font-size: 5rem;
   color: brown;
+}
+
+.toggle-ai-mode {
 }
 
 .input-form {

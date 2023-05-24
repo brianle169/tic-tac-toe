@@ -141,6 +141,14 @@ const GameBoard = (() => {
 // GameController Module.
 // GameController: used to control game logic (winning condition, check invalid input, etc.)
 const GameController = (() => {
+  let gameEnd;
+  let winner;
+  let turn;
+  let currentPlayer;
+  let currentTurn;
+  let resultMessage;
+  let aiMode;
+
   const playerOne = {
     team: "Death",
     name: "Death",
@@ -151,12 +159,13 @@ const GameController = (() => {
     name: "Life",
     mark: "☻",
   };
-  let gameEnd;
-  let winner;
-  let turn;
-  let currentPlayer;
-  let currentTurn;
-  let resultMessage;
+
+  const AI = {
+    name: "AI",
+    team: currentPlayer.team === "Death" ? "Life" : "Death",
+    mark: this.team === "Death" ? "☠" : "☻",
+  };
+
   const setDefaultGameState = () => {
     gameEnd = false;
     winner = "";
