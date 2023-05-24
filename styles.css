@@ -112,9 +112,6 @@ button {
   color: brown;
 }
 
-.toggle-ai-mode {
-}
-
 .input-form {
   display: grid;
   grid-template: 3rem 3rem 3rem/ 45% 45%;
