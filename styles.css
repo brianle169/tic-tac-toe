@@ -33,6 +33,11 @@
   font-weight: 900;
 }
 
+.message {
+  display: flex;
+  column-gap: 35px;
+}
+
 .board {
   height: 450px;
   width: 450px;
@@ -55,6 +60,8 @@ button {
 }
 
 .cell:hover,
+.start:hover,
+.resetGame:hover,
 .restart:hover {
   cursor: pointer;
 }
@@ -64,19 +71,73 @@ button {
   background-color: #ffffff95;
 }
 
-.restart {
+.restart,
+.resetGame,
+.start {
   font-size: 1.3rem;
   font-weight: bold;
   padding: 10px;
   margin-bottom: 10px;
   background-color: orange;
+  border-radius: 10px;
   box-shadow: 2px 2px 5px 0px #000000;
 }
 
-.restart:active {
+.restart:active,
+.resetGame:active,
+.start:active {
   cursor: pointer;
   transform: translateX(2px) translateY(2px);
   box-shadow: none;
+}
+
+.start-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 60px;
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  background-color: white;
+  top: 0;
+}
+
+.start-game h1 {
+  font-size: 5rem;
+  color: brown;
+}
+
+.input-form {
+  display: grid;
+  grid-template: 3rem 3rem 3rem/ 45% 45%;
+  column-gap: 30px;
+  row-gap: 10px;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+}
+
+.start-game label {
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.name-input {
+  appearance: none;
+  outline: none;
+}
+
+.name-input {
+  font-size: 1.3rem;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
+
+.start {
+  margin-top: 20px;
+  grid-column: span 2;
 }
 
 .footer {

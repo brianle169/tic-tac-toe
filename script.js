@@ -142,11 +142,13 @@ const GameBoard = (() => {
 // GameController: used to control game logic (winning condition, check invalid input, etc.)
 const GameController = (() => {
   const playerOne = {
-    name: "Death",
+    team: "Death",
+    name: "",
     mark: "☠",
   };
   const playerTwo = {
-    name: "Life",
+    team: "Life",
+    name: "",
     mark: "☻",
   };
   let gameEnd;
@@ -163,12 +165,16 @@ const GameController = (() => {
     currentTurn = `${currentPlayer.name}'s turn to move!`;
     resultMessage = "Welcome players!";
   };
-  setDefaultGameState();
   const getCurrentPlayer = () => currentPlayer;
   const getCurrentTurnMessage = () => currentTurn;
   const getResultMessage = () => resultMessage;
   const getGameEndStatus = () => gameEnd;
   const getWinner = () => winner;
+  const setPlayerName = (name1, name2) => {
+    playerOne.name = name1;
+    playerTwo.name = name2;
+    setDefaultGameState();
+  };
   const switchTurn = () => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
     currentTurn = `${currentPlayer.name}'s turn to move!`;
@@ -205,8 +211,10 @@ const GameController = (() => {
       }
       if (gameWon()) {
         resultMessage =
-          currentPlayer.name === "Death" ? `You're DEAD!` : "You SURVIVED!";
-        winner = currentPlayer.name;
+          currentPlayer.team === "Death"
+            ? `DEATH prevails!`
+            : "Long live humans!";
+        winner = currentPlayer.team;
         currentTurn = "Game ended!";
         gameEnd = true;
         return;
@@ -216,6 +224,7 @@ const GameController = (() => {
   };
 
   return {
+    setPlayerName,
     getCurrentPlayer,
     getCurrentTurnMessage,
     getResultMessage,
@@ -233,6 +242,21 @@ const DisplayController = (() => {
   const boardDiv = document.querySelector(".board"); // board div in HTML
   const messageDiv = document.querySelector(".message");
   const resultDiv = document.querySelector(".result-message");
+  const startGameMenu = document.querySelector(".start-game");
+  const playerOneInput = document.getElementById("player-one");
+  const playerTwoInput = document.getElementById("player-two");
+  const startButton = document.querySelector(".start");
+
+  const initiateGame = (event) => {
+    // Set players names
+    console.log("submitted");
+    GameController.setPlayerName(playerOneInput.value, playerTwoInput.value);
+    startGameMenu.style = "display: none";
+    displayGameBoard();
+    event.preventDefault();
+  };
+
+  startButton.addEventListener("click", initiateGame);
 
   const disableBoard = () => {
     Array.from(boardDiv.childNodes).forEach((node) => {
@@ -246,13 +270,27 @@ const DisplayController = (() => {
     displayGameBoard();
   };
 
-  const displayRestartButton = () => {
+  const resetGame = () => {
+    GameBoard.clearBoard();
+    GameController.setDefaultGameState();
+    startGameMenu.style = "display: flex";
+  };
+
+  const displayEndGameButtons = () => {
     const restartButton = document.createElement("button");
+    const resetButton = document.createElement("button");
+
     restartButton.classList.add("restart");
     restartButton.textContent = "Play Again";
     restartButton.addEventListener("click", restartGame);
+
+    resetButton.classList.add("resetGame");
+    resetButton.textContent = "Reset Game";
+    resetButton.addEventListener("click", resetGame);
+
     messageDiv.textContent = "";
     messageDiv.appendChild(restartButton);
+    messageDiv.appendChild(resetButton);
   };
 
   // clickHandler() callback: event handler for each cell click.
@@ -263,7 +301,7 @@ const DisplayController = (() => {
     displayGameBoard();
     if (GameController.getGameEndStatus()) {
       disableBoard();
-      displayRestartButton();
+      displayEndGameButtons();
     }
     boardDiv.style.backgroundColor =
       GameController.getWinner() === "Death"
@@ -293,5 +331,4 @@ const DisplayController = (() => {
       }
     }
   };
-  displayGameBoard(); // Render an initial game board.
 })();
