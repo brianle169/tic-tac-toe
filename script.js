@@ -143,12 +143,12 @@ const GameBoard = (() => {
 const GameController = (() => {
   const playerOne = {
     team: "Death",
-    name: "",
+    name: "Death",
     mark: "☠",
   };
   const playerTwo = {
     team: "Life",
-    name: "",
+    name: "Life",
     mark: "☻",
   };
   let gameEnd;
@@ -171,8 +171,10 @@ const GameController = (() => {
   const getGameEndStatus = () => gameEnd;
   const getWinner = () => winner;
   const setPlayerName = (name1, name2) => {
-    playerOne.name = name1;
-    playerTwo.name = name2;
+    if (name1 !== "" && name2 !== "") {
+      playerOne.name = name1;
+      playerTwo.name = name2;
+    }
     setDefaultGameState();
   };
   const switchTurn = () => {
@@ -249,7 +251,6 @@ const DisplayController = (() => {
 
   const initiateGame = (event) => {
     // Set players names
-    console.log("submitted");
     GameController.setPlayerName(playerOneInput.value, playerTwoInput.value);
     startGameMenu.style = "display: none";
     displayGameBoard();
