@@ -246,7 +246,7 @@ const GameController = (() => {
     if (validMove(row, col)) {
       GameBoard.addPlayerMove(row, col, currentPlayer);
       if (gameTie()) {
-        resultMessage = `You're probably still alive lol!`;
+        resultMessage = `Looks like no one is dead (or alive)`;
         currentTurn = `Game ended!`;
         gameEnd = true;
         return;

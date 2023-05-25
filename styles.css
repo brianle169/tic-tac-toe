@@ -20,7 +20,7 @@
 .game-area {
   /* Game Area will have fixed dimension */
   height: 550px;
-  width: 500px;
+  width: 550px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
