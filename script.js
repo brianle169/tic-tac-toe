@@ -51,6 +51,9 @@ const GameBoard = (() => {
 
   const getBoard = () => board;
 
+  const getCheckInfo = () =>
+    board.map((row) => row.map((cell) => cell.getCheckStatus()));
+
   const clearBoard = () => {
     board.forEach((row) => row.forEach((cell) => cell.clearCellContent()));
   };
@@ -129,6 +132,7 @@ const GameBoard = (() => {
 
   return {
     getBoard,
+    getCheckInfo,
     clearBoard,
     addPlayerMove,
     boardIsFilled,
@@ -152,7 +156,23 @@ const Player = (pTeam, pName, pMark) => {
   return { getTeam, getName, getMark, setName };
 };
 
-const AI = () => {};
+const AI = () => {
+  // AI is also a player.
+  const aiPlayer = Player("Death", "AI", "☠");
+  const move = () => {
+    const board = GameBoard.getBoard();
+    const getRand = () => Math.floor(Math.random() * board.length);
+    let randomRow;
+    let randomCol;
+    do {
+      randomRow = getRand();
+      randomCol = getRand();
+    } while (board[randomRow][randomCol].getCheckStatus());
+    GameController.playRound(randomRow, randomCol);
+  };
+
+  return { ...aiPlayer, move };
+};
 
 // GameController Module.
 // GameController: used to control game logic (winning condition, check invalid input, etc.)
@@ -163,16 +183,26 @@ const GameController = (() => {
   let currentPlayer;
   let currentTurn;
   let resultMessage;
-  let aiMode;
+  let aiMode = false;
 
-  const playerOne = Player("Death", "Death", "☠");
+  const toggleAIMode = () => {
+    aiMode = true;
+    setDefaultGameState();
+  };
+
+  let playerOne = Player("Death", "Death", "☠");
   const playerTwo = Player("Life", "Life", "☻");
 
   const setDefaultGameState = () => {
+    console.log(`Is aiMode: ${aiMode}`);
     gameEnd = false;
     winner = "";
     turn = 0;
-    currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
+    if (aiMode) {
+      playerOne = AI();
+    }
+    // currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
+    currentPlayer = playerOne;
     currentTurn = `${currentPlayer.getName()}'s turn to move!`;
     resultMessage = "Welcome players!";
   };
@@ -191,6 +221,12 @@ const GameController = (() => {
   const switchTurn = () => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
     currentTurn = `${currentPlayer.getName()}'s turn to move!`;
+    if (currentPlayer === playerOne) {
+      console.log(true);
+      currentPlayer.move();
+      DisplayController.displayGameBoard();
+      if (gameEnd) DisplayController.finalizeGame();
+    }
   };
 
   // Check if current player clicked on a filled cell. Returns true if valid false otherwise
@@ -205,9 +241,8 @@ const GameController = (() => {
   const gameTie = () => GameBoard.boardIsFilled() && !gameWon();
 
   const playRound = (row, col) => {
-    turn++;
     resultMessage =
-      turn >= 1 && turn < 5
+      ++turn >= 1 && turn < 5
         ? `Try not to die!`
         : turn >= 5
         ? `This is getting intense!`
@@ -238,6 +273,7 @@ const GameController = (() => {
 
   return {
     setPlayerName,
+    toggleAIMode,
     getCurrentPlayer,
     getCurrentTurnMessage,
     getResultMessage,
@@ -259,6 +295,25 @@ const DisplayController = (() => {
   const playerOneInput = document.getElementById("player-one");
   const playerTwoInput = document.getElementById("player-two");
   const startButton = document.querySelector(".start");
+  const aiModeButton = document.querySelector(".toggle-ai-mode");
+  let aiMode = false;
+
+  const initiateAIMode = (event) => {
+    aiMode = true;
+    GameController.toggleAIMode();
+    startGameMenu.style = "display: none";
+    checkAIMoves();
+    displayGameBoard();
+    event.preventDefault();
+  };
+
+  const checkAIMoves = () => {
+    if (GameController.getCurrentPlayer().getName() === "AI") {
+      GameController.getCurrentPlayer().move();
+    }
+  };
+
+  aiModeButton.addEventListener("click", initiateAIMode);
 
   const initiateGame = (event) => {
     // Set players names
@@ -279,6 +334,7 @@ const DisplayController = (() => {
   const restartGame = () => {
     GameBoard.clearBoard();
     GameController.setDefaultGameState();
+    checkAIMoves();
     displayGameBoard();
   };
 
@@ -305,6 +361,17 @@ const DisplayController = (() => {
     messageDiv.appendChild(resetButton);
   };
 
+  const finalizeGame = () => {
+    disableBoard();
+    displayEndGameButtons();
+    boardDiv.style.backgroundColor =
+      GameController.getWinner() === "Death"
+        ? "red"
+        : GameController.getWinner() === "Life"
+        ? "green"
+        : "black";
+  };
+
   // clickHandler() callback: event handler for each cell click.
   const clickHandler = (event) => {
     const cRow = event.target.dataset.row;
@@ -312,15 +379,8 @@ const DisplayController = (() => {
     GameController.playRound(cRow, cCol);
     displayGameBoard();
     if (GameController.getGameEndStatus()) {
-      disableBoard();
-      displayEndGameButtons();
+      finalizeGame();
     }
-    boardDiv.style.backgroundColor =
-      GameController.getWinner() === "Death"
-        ? "red"
-        : GameController.getWinner() === "Life"
-        ? "green"
-        : "black";
   };
 
   // paintBoard: render the initial game board, and add event handler to each cell.
@@ -343,4 +403,6 @@ const DisplayController = (() => {
       }
     }
   };
+
+  return { displayGameBoard, finalizeGame };
 })();

@@ -15,6 +15,7 @@
     "no-plusplus": "off",
     "no-console": "off",
     "no-continue": "off",
-    "no-nested-ternary": "off"
+    "no-nested-ternary": "off",
+    "no-use-before-define": "off"
   }
 }
