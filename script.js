@@ -183,29 +183,24 @@ const GameController = (() => {
   let currentPlayer;
   let currentTurn;
   let resultMessage;
-  let aiMode = false;
-
-  const toggleAIMode = () => {
-    aiMode = true;
-    setDefaultGameState();
-  };
+  let aiMode;
 
   let playerOne = Player("Death", "Death", "☠");
   const playerTwo = Player("Life", "Life", "☻");
 
-  const setDefaultGameState = () => {
-    console.log(`Is aiMode: ${aiMode}`);
+  const setDefaultGameState = (isAIMode) => {
+    aiMode = isAIMode;
     gameEnd = false;
     winner = "";
     turn = 0;
     if (aiMode) {
       playerOne = AI();
     }
-    // currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
-    currentPlayer = playerOne;
+    currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
     currentTurn = `${currentPlayer.getName()}'s turn to move!`;
     resultMessage = "Welcome players!";
   };
+
   const getCurrentPlayer = () => currentPlayer;
   const getCurrentTurnMessage = () => currentTurn;
   const getResultMessage = () => resultMessage;
@@ -221,11 +216,10 @@ const GameController = (() => {
   const switchTurn = () => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
     currentTurn = `${currentPlayer.getName()}'s turn to move!`;
-    if (currentPlayer === playerOne) {
-      console.log(true);
+    if (currentPlayer.getName() === "AI") {
       currentPlayer.move();
-      DisplayController.displayGameBoard();
       if (gameEnd) DisplayController.finalizeGame();
+      DisplayController.displayGameBoard();
     }
   };
 
@@ -273,7 +267,6 @@ const GameController = (() => {
 
   return {
     setPlayerName,
-    toggleAIMode,
     getCurrentPlayer,
     getCurrentTurnMessage,
     getResultMessage,
@@ -300,7 +293,7 @@ const DisplayController = (() => {
 
   const initiateAIMode = (event) => {
     aiMode = true;
-    GameController.toggleAIMode();
+    GameController.setDefaultGameState(aiMode);
     startGameMenu.style = "display: none";
     checkAIMoves();
     displayGameBoard();
@@ -333,14 +326,15 @@ const DisplayController = (() => {
 
   const restartGame = () => {
     GameBoard.clearBoard();
-    GameController.setDefaultGameState();
+    GameController.setDefaultGameState(aiMode);
     checkAIMoves();
     displayGameBoard();
   };
 
   const resetGame = () => {
     GameBoard.clearBoard();
-    GameController.setDefaultGameState();
+    aiMode = false;
+    GameController.setDefaultGameState(aiMode);
     startGameMenu.style = "display: flex";
   };
 
