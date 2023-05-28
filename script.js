@@ -1,15 +1,11 @@
 // Cell Factory.
 // Cell(): Used to initiate Cell objects, where each player's mark will be displayed.
-const Cell = (rowIndex, colIndex) => {
-  const coordinate = {
-    r: rowIndex,
-    c: colIndex,
-  };
+const Cell = () => {
   let markedValue = "";
   let markedPlayer = "";
   let isChecked = false; // the current status of cell
   const checkMark = (player) => {
-    markedPlayer = player.getName();
+    markedPlayer = player.getTeam();
     markedValue = player.getMark();
     isChecked = true;
   };
@@ -18,7 +14,6 @@ const Cell = (rowIndex, colIndex) => {
     markedPlayer = "";
     isChecked = false;
   };
-  const getCoordinate = () => coordinate;
   const getMarkedValue = () => markedValue;
   const getMarkedPlayer = () => markedPlayer;
   const getCheckStatus = () => isChecked;
@@ -26,7 +21,6 @@ const Cell = (rowIndex, colIndex) => {
     getMarkedValue,
     checkMark,
     getCheckStatus,
-    getCoordinate,
     getMarkedPlayer,
     clearCellContent,
   };
@@ -38,6 +32,7 @@ const GameBoard = (() => {
   const rows = 3;
   const cols = 3;
   const board = [];
+  let winner;
 
   // Build a board;
   for (let row = 0; row < rows; row++) {
@@ -50,9 +45,6 @@ const GameBoard = (() => {
   }
 
   const getBoard = () => board;
-
-  const getCheckInfo = () =>
-    board.map((row) => row.map((cell) => cell.getCheckStatus()));
 
   const clearBoard = () => {
     board.forEach((row) => row.forEach((cell) => cell.clearCellContent()));
@@ -68,6 +60,9 @@ const GameBoard = (() => {
       row.every(
         (element) => element.getMarkedValue() === row[0].getMarkedValue()
       );
+    if (result) {
+      winner = row[0].getMarkedPlayer();
+    }
     return result;
   };
 
@@ -84,6 +79,7 @@ const GameBoard = (() => {
         }
       }
       if (colItems.length === cols) {
+        winner = target.getMarkedPlayer();
         return true;
       }
     }
@@ -95,32 +91,36 @@ const GameBoard = (() => {
     let right = cols - 1;
     const leftDiagItems = [];
     const rightDiagItems = [];
+    const leftTarget = board[0][0];
+    const leftTargetValue = leftTarget.getMarkedPlayer();
+    const rightTarget = board[0][cols - 1];
+    const rightTargetValue = rightTarget.getMarkedPlayer();
 
     for (let row = 0; row < rows; row++) {
-      const leftTarget = board[0][0];
-      const leftTargetValue = leftTarget.getMarkedValue();
-      const rightTarget = board[0][cols - 1];
-      const rightTargetValue = rightTarget.getMarkedValue();
-
       if (!leftTarget.getCheckStatus() && !rightTarget.getCheckStatus()) {
         return false;
       }
       if (
         board[row][left].getCheckStatus() &&
-        board[row][left].getMarkedValue() === leftTargetValue
+        board[row][left].getMarkedPlayer() === leftTargetValue
       ) {
         leftDiagItems.push(leftTargetValue);
       }
       if (
         board[row][right].getCheckStatus() &&
-        board[row][right].getMarkedValue() === rightTargetValue
+        board[row][right].getMarkedPlayer() === rightTargetValue
       ) {
         rightDiagItems.push(rightTargetValue);
       }
       left++;
       right--;
     }
-    if (leftDiagItems.length === rows || rightDiagItems.length === rows) {
+    if (leftDiagItems.length === rows) {
+      winner = leftTarget.getMarkedPlayer();
+      return true;
+    }
+    if (rightDiagItems.length === rows) {
+      winner = rightTarget.getMarkedPlayer();
       return true;
     }
     return false;
@@ -131,7 +131,7 @@ const GameBoard = (() => {
 
   const checkWinner = () => {
     if (gameWon()) {
-      return GameController.getCurrentPlayer().getTeam();
+      return winner;
     }
     if (gameTie()) {
       return "Tie";
@@ -145,7 +145,6 @@ const GameBoard = (() => {
 
   return {
     getBoard,
-    getCheckInfo,
     clearBoard,
     addPlayerMove,
     boardIsFilled,
@@ -172,21 +171,63 @@ const AI = () => {
   const aiPlayer = Player("Death", "AI", "☠");
   // Benchmark to pick move
   const scores = {
-    Death: 10,
-    Life: -10,
+    Death: 1,
+    Life: -1,
     Tie: 0,
   };
   // Minimax algorithm to pick the best move possible
+
   const move = () => {
     const board = GameBoard.getBoard();
-    const getRand = () => Math.floor(Math.random() * board.length);
-    let randomRow;
-    let randomCol;
-    do {
-      randomRow = getRand();
-      randomCol = getRand();
-    } while (board[randomRow][randomCol].getCheckStatus());
-    GameController.playRound(randomRow, randomCol);
+    let bestScore = -Infinity;
+    let position;
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 3; col++) {
+        if (!board[row][col].getCheckStatus()) {
+          board[row][col].checkMark(aiPlayer);
+          const score = minimax(board, 0, false);
+          board[row][col].clearCellContent();
+          if (score > bestScore) {
+            bestScore = score;
+            position = { row, col };
+          }
+        }
+      }
+    }
+    GameController.playRound(position.row, position.col);
+  };
+
+  const minimax = (board, depth, isMaximizing) => {
+    const result = GameBoard.checkWinner();
+    if (result !== null) {
+      return scores[result];
+    }
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) {
+          if (!board[row][col].getCheckStatus()) {
+            board[row][col].checkMark(aiPlayer);
+            const score = minimax(board, depth + 1, false);
+            board[row][col].clearCellContent();
+            bestScore = Math.max(score, bestScore);
+          }
+        }
+      }
+      return bestScore;
+    }
+    let bestScore = Infinity;
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 3; col++) {
+        if (!board[row][col].getCheckStatus()) {
+          board[row][col].checkMark(GameController.getHumanPlayer());
+          const score = minimax(board, depth + 1, true);
+          board[row][col].clearCellContent();
+          bestScore = Math.min(score, bestScore);
+        }
+      }
+    }
+    return bestScore;
   };
 
   return { ...aiPlayer, move };
@@ -221,6 +262,7 @@ const GameController = (() => {
   };
 
   const getCurrentPlayer = () => currentPlayer;
+  const getHumanPlayer = () => playerTwo;
   const getCurrentTurnMessage = () => currentTurn;
   const getResultMessage = () => resultMessage;
   const getGameEndStatus = () => gameEnd;
@@ -232,6 +274,11 @@ const GameController = (() => {
     }
     setDefaultGameState(false);
   };
+
+  const changeTurn = () => {
+    currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
+  };
+
   const switchTurn = () => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
     currentTurn = `${currentPlayer.getName()}'s turn to move!`;
@@ -283,8 +330,10 @@ const GameController = (() => {
     getGameEndStatus,
     getWinner,
     switchTurn,
+    changeTurn,
     playRound,
     setDefaultGameState,
+    getHumanPlayer,
   };
 })();
 
