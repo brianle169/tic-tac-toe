@@ -126,6 +126,19 @@ const GameBoard = (() => {
     return false;
   };
 
+  const gameWon = () => colCheck() || rowCheck() || diagCheck();
+  const gameTie = () => boardIsFilled() && !gameWon();
+
+  const checkWinner = () => {
+    if (gameWon()) {
+      return GameController.getCurrentPlayer().getTeam();
+    }
+    if (gameTie()) {
+      return "Tie";
+    }
+    return null;
+  };
+
   const addPlayerMove = (row, col, player) => {
     board[row][col].checkMark(player);
   };
@@ -136,9 +149,7 @@ const GameBoard = (() => {
     clearBoard,
     addPlayerMove,
     boardIsFilled,
-    rowCheck,
-    colCheck,
-    diagCheck,
+    checkWinner,
   };
 })();
 
@@ -159,6 +170,13 @@ const Player = (pTeam, pName, pMark) => {
 const AI = () => {
   // AI is also a player.
   const aiPlayer = Player("Death", "AI", "☠");
+  // Benchmark to pick move
+  const scores = {
+    Death: 10,
+    Life: -10,
+    Tie: 0,
+  };
+  // Minimax algorithm to pick the best move possible
   const move = () => {
     const board = GameBoard.getBoard();
     const getRand = () => Math.floor(Math.random() * board.length);
@@ -191,12 +209,13 @@ const GameController = (() => {
   const setDefaultGameState = (isAIMode) => {
     aiMode = isAIMode;
     gameEnd = false;
-    winner = "";
+    winner = null;
     turn = 0;
+    currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
     if (aiMode) {
       playerOne = AI();
+      currentPlayer = playerOne;
     }
-    currentPlayer = Math.random() < 0.5 ? playerOne : playerTwo;
     currentTurn = `${currentPlayer.getName()}'s turn to move!`;
     resultMessage = "Welcome players!";
   };
@@ -211,12 +230,12 @@ const GameController = (() => {
       playerOne.setName(name1);
       playerTwo.setName(name2);
     }
-    setDefaultGameState();
+    setDefaultGameState(false);
   };
   const switchTurn = () => {
     currentPlayer = currentPlayer === playerOne ? playerTwo : playerOne;
     currentTurn = `${currentPlayer.getName()}'s turn to move!`;
-    if (currentPlayer.getName() === "AI") {
+    if (aiMode && currentPlayer.getName() === "AI") {
       currentPlayer.move();
       if (gameEnd) DisplayController.finalizeGame();
       DisplayController.displayGameBoard();
@@ -226,13 +245,6 @@ const GameController = (() => {
   // Check if current player clicked on a filled cell. Returns true if valid false otherwise
   const validMove = (row, col) =>
     !GameBoard.getBoard()[row][col].getCheckStatus();
-
-  // Check whether the game ended with a win.
-  const gameWon = () =>
-    GameBoard.colCheck() || GameBoard.rowCheck() || GameBoard.diagCheck();
-
-  // TIE: when the game board is filled but no one wins.
-  const gameTie = () => GameBoard.boardIsFilled() && !gameWon();
 
   const playRound = (row, col) => {
     resultMessage =
@@ -245,18 +257,16 @@ const GameController = (() => {
     // If the move is valid (no overlap) then we add move to cell.
     if (validMove(row, col)) {
       GameBoard.addPlayerMove(row, col, currentPlayer);
-      if (gameTie()) {
+      winner = GameBoard.checkWinner();
+      if (winner === "Tie") {
         resultMessage = `Looks like no one is dead (or alive)`;
         currentTurn = `Game ended!`;
         gameEnd = true;
         return;
       }
-      if (gameWon()) {
+      if (winner !== null && winner !== "Tie") {
         resultMessage =
-          currentPlayer.getTeam() === "Death"
-            ? `DEATH prevails!`
-            : "Long live humans!";
-        winner = currentPlayer.getTeam();
+          winner === "Death" ? `DEATH prevails!` : "Long live humans!";
         currentTurn = "Game ended!";
         gameEnd = true;
         return;
